@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hollow Snake</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container text-center ui mt-4  d-flex flex-column align-items-center">
+        <h1 class="hk-title">Hollow Snake</h1>
+        <p class="text-secondary"> Collect Soul - Survive the Abyss</p>
+
+        <div class="d-flex justify-content-center gap-3 mb-3">
+            <div class="hud">
+                Score: <span id="score">0</span>
+            </div>
+        </div>
+
+       <canvas id="game" width="400" height="400"></canvas>
+
+        <button class="btn hk-button mt-3" onclick="restartGame()">Restart</button>
+
+        
+    </div>
+    
+
+
+    <script src="script.js"></script>
+</body>
+</html>
