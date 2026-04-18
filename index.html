@@ -19,10 +19,28 @@
             </div>
         </div>
 
-       <canvas id="game" width="400" height="400"></canvas>
+       <canvas id="game" width="400" height="400">
+
+        
+       </canvas>
+       <div class="mobile-controls d-md-none mt-3">
+    <button class="ctrl up" onclick="setDir(0, -1)">▲</button>
+
+    <div class="middle">
+        <button class="ctrl left" onclick="setDir(-1, 0)">◀</button>
+        <button class="ctrl right" onclick="setDir(1, 0)">▶</button>
+    </div>
+
+    <button class="ctrl down" onclick="setDir(0, 1)">▼</button>
+</div>
+
+       
+
+
 
         <button class="btn hk-button mt-3" onclick="restartGame()">Restart</button>
 
+       
         
     </div>
     

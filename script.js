@@ -9,7 +9,10 @@ let food;
 let direction;
 let lastDirection;
 let score;
-let gameInterval;
+
+let lastTime = 0;
+let accumulator = 0;
+let step = 110;
 
 const headImg = new Image();
 headImg.src = "assets/img/knight_head.png";
@@ -99,6 +102,13 @@ function draw() {
     });
 }
 
+window.setDir = function (x, y) {
+    if (x === 1 && lastDirection.x === 0) direction = { x: 1, y: 0 };
+    if (x === -1 && lastDirection.x === 0) direction = { x: -1, y: 0 };
+    if (y === 1 && lastDirection.y === 0) direction = { x: 0, y: 1 };
+    if (y === -1 && lastDirection.y === 0) direction = { x: 0, y: -1 };
+};
+
 function roundRect(ctx, x, y, w, h, r) {
     ctx.beginPath();
     ctx.moveTo(x + r, y);
@@ -125,9 +135,7 @@ function move() {
         head.y >= canvas.height / size ||
         snake.some(s => s.x === head.x && s.y === head.y)
     ) {
-        clearInterval(gameInterval);
         restartGame();
-        startGame();
         return;
     }
 
@@ -142,29 +150,34 @@ function move() {
     }
 }
 
-function gameLoop() {
-    if (direction.x === 0 && direction.y === 0) return;
-    lastDirection = direction;
-    move();
-    draw();
+function gameLoop(timestamp) {
+    if (!lastTime) lastTime = timestamp;
+
+    const delta = timestamp - lastTime;
+    lastTime = timestamp;
+
+    accumulator += delta;
+
+    if (!(direction.x === 0 && direction.y === 0)) {
+        if (accumulator >= step) {
+            lastDirection = direction;
+            move();
+            draw();
+            accumulator = 0;
+        }
+    }
+
+    requestAnimationFrame(gameLoop);
 }
 
 document.addEventListener("keydown", e => {
-    if (e.key === "ArrowUp" && lastDirection.y === 0) direction = { x: 0, y: -1 };
-    if (e.key === "ArrowDown" && lastDirection.y === 0) direction = { x: 0, y: 1 };
-    if (e.key === "ArrowLeft" && lastDirection.x === 0) direction = { x: -1, y: 0 };
-    if (e.key === "ArrowRight" && lastDirection.x === 0) direction = { x: 1, y: 0 };
-});
+    const k = e.key;
 
-function restartGame() {
-    snake = [{ x: 10, y: 10 }];
-    direction = { x: 0, y: 0 };
-    lastDirection = { x: 0, y: 0 };
-    score = 0;
-    scoreEl.textContent = score;
-    food = generateFood();
-    draw();
-}
+    if (k === "ArrowUp" && lastDirection.y === 0) direction = { x: 0, y: -1 };
+    else if (k === "ArrowDown" && lastDirection.y === 0) direction = { x: 0, y: 1 };
+    else if (k === "ArrowLeft" && lastDirection.x === 0) direction = { x: -1, y: 0 };
+    else if (k === "ArrowRight" && lastDirection.x === 0) direction = { x: 1, y: 0 };
+});
 
 let touchStartX = 0;
 let touchStartY = 0;
@@ -186,24 +199,23 @@ canvas.addEventListener("touchend", e => {
     const dy = t.clientY - touchStartY;
 
     if (Math.abs(dx) > Math.abs(dy)) {
-        if (dx > 0 && lastDirection.x === 0) {
-            direction = { x: 1, y: 0 };
-        } else if (dx < 0 && lastDirection.x === 0) {
-            direction = { x: -1, y: 0 };
-        }
+        if (dx > 0 && lastDirection.x === 0) direction = { x: 1, y: 0 };
+        else if (dx < 0 && lastDirection.x === 0) direction = { x: -1, y: 0 };
     } else {
-        if (dy > 0 && lastDirection.y === 0) {
-            direction = { x: 0, y: 1 };
-        } else if (dy < 0 && lastDirection.y === 0) {
-            direction = { x: 0, y: -1 };
-        }
+        if (dy > 0 && lastDirection.y === 0) direction = { x: 0, y: 1 };
+        else if (dy < 0 && lastDirection.y === 0) direction = { x: 0, y: -1 };
     }
 });
 
-function startGame() {
-    clearInterval(gameInterval);
-    gameInterval = setInterval(gameLoop, 120);
+function restartGame() {
+    snake = [{ x: 10, y: 10 }];
+    direction = { x: 0, y: 0 };
+    lastDirection = { x: 0, y: 0 };
+    score = 0;
+    scoreEl.textContent = score;
+    food = generateFood();
+    draw();
 }
 
 restartGame();
-startGame();
+requestAnimationFrame(gameLoop);
